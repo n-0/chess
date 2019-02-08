@@ -1,0 +1,10 @@
+.field {
+	border: 1px solid black;
+	text-align: center;
+	font-size: 2rem;
+}
+
+.black {
+	background-color: lightgray;
+}
+
