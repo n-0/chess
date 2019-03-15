@@ -2,14 +2,11 @@ import React from 'react';
 // eslint-disable-next-line no-unused-vars
 import Board from './board/board';
 // eslint-disable-next-line no-unused-vars
-import Start from './start/start';
+//import Start from './start/start';
 // eslint-disable-next-line no-unused-vars
 import History from './history/history';
 // eslint-disable-next-line no-unused-vars
-import Bootstrap from './css/bootstrap.css';
-// eslint-disable-next-line no-unused-vars
-import { type } from 'os';
-import { all } from 'q';
+import Bootstrap from '../css/bootstrap.css';
 
 /**
  * @typedef figure
@@ -365,22 +362,23 @@ class Chess extends React.Component {
 
 		if (move.lastRow+1 < 8 && board[move.lastRow+1][move.lastIndex].color !== move.figure.color) {
 				possibleMoves.push([move.lastRow+1, move.lastIndex]);
-			if (move.lastIndex-1 > -1 && board[move.lastRow+1][move.lastIndex-1].color !== move.figure.color) {
-				possibleMoves.push([move.lastRow+1, move.lastIndex-1]);
-			}
-			if (move.lastIndex+1 < 8 && board[move.lastRow+1][move.lastIndex+1].color !== move.figure.color) {
+		}
+		if (move.lastIndex-1 > -1 && move.lastRow+1 < 8 && board[move.lastRow+1][move.lastIndex-1].color !== move.figure.color) {
+			possibleMoves.push([move.lastRow+1, move.lastIndex-1]);
+		}
+		if (move.lastIndex+1 < 8 && move.lastRow+1 < 8 && board[move.lastRow+1][move.lastIndex+1].color !== move.figure.color) {
 				possibleMoves.push([move.lastRow+1, move.lastIndex+1]);
-			}
-		} 
+		}
+
 		if (move.lastRow-1 > -1 && board[move.lastRow-1][move.lastIndex].color !== move.figure.color) {
 			possibleMoves.push([move.lastRow-1, move.lastIndex]);
-			if (move.lastIndex-1 > -1 && board[move.lastRow-1][move.lastIndex-1].color !== move.figure.color) {
-				possibleMoves.push([move.lastRow-1, move.lastIndex-1]);
-			}
-			if (move.lastIndex+1 < 8 && board[move.lastRow-1][move.lastIndex+1].color !== move.figure.color) {
-				possibleMoves.push([move.lastRow-1, move.lastIndex+1]);
-			}
-		} 
+		}
+		if (move.lastIndex-1 > -1 && move.lastRow-1 > -1 && board[move.lastRow-1][move.lastIndex-1].color !== move.figure.color) {
+			possibleMoves.push([move.lastRow-1, move.lastIndex-1]);
+		}
+		if (move.lastIndex+1 < 8 && move.lastRow-1 > -1 && board[move.lastRow-1][move.lastIndex+1].color !== move.figure.color) {
+			possibleMoves.push([move.lastRow-1, move.lastIndex+1]);
+		}
 		if (move.lastIndex+1 < 8 && board[move.lastRow][move.lastIndex+1].color !== move.figure.color) {
 			possibleMoves.push([move.lastRow, move.lastIndex+1]);
 		}
@@ -553,15 +551,19 @@ class Chess extends React.Component {
 		});
 	}
 
-	undoMove(move) {
+	undoMove() {
+		if (this.state.history.length === 0) {
+			return;
+		}
 		this.setState((state) => {
+			let move = state.history[state.history.length-1];
 			state.board[move.lastRow][move.lastIndex] = move.figure;
-			state.currentPlayer = !state.currentPlayer;
 			if (move.catched) {
 				state.board[move.row][move.index] = move.catched;
 			} else {
 				state.board[move.row][move.index] = {figure: null, color: null, number: null};
 			}
+			state.currentPlayer = !state.currentPlayer;
 			state.history.pop();
 			state.move = {
 				figure: {
